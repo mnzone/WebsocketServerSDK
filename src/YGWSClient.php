@@ -76,8 +76,10 @@ class YGWSClient
     {
         try {
             $response = $this->httpClient->post('/cgi-bin/add-user', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->getServerToken()
+                ],
                 'json' => [
-                    'server_token' => $this->getServerToken(),
                     'username' => $username,
                     'password' => hash('sha256', $password),
                     'email' => $email,
@@ -102,7 +104,7 @@ class YGWSClient
         try {
             $response = $this->httpClient->post('/cgi-bin/ws-token', [
                 'headers' => [
-                    'Server-Token' => $this->getServerToken()
+                    'Authorization' => 'Bearer ' . $this->getServerToken()
                 ],
                 'json' => [
                     'user_id' => $userId
