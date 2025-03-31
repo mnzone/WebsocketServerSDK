@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use YG\WebSocketClient\YGWSClient;
+use YG\WSServer\YGWSClient;
 
 // 创建WebSocket客户端实例
 $client = new YGWSClient(

@@ -1,6 +1,6 @@
 <?php
 
-namespace YG\WebSocketClient;
+namespace YG\WSServer;
 
 use GuzzleHttp\Client;
 use Ratchet\Client\WebSocket;
