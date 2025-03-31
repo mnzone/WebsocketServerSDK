@@ -1,5 +1,5 @@
 {
-    "name": "yg/websocket-server-sdk",
+    "name": "yungangunite/websocket-server-sdk",
     "description": "PHP SDK for WebSocket service integration",
     "type": "library",
     "license": "MIT",
