@@ -3,18 +3,24 @@
 namespace YG\WSServer;
 
 use GuzzleHttp\Client;
+use YG\WSServer\Cache\CacheInterface;
+use YG\WSServer\Cache\FileCache;
 
 class YGWSClient
 {
     private string $appId;
     private string $appSecret;
     private string $baseUrl;
-    private ?string $serverToken = null;
-    private ?string $serverTokenExpiresAt = null;
     private Client $httpClient;
+    private CacheInterface $cache;
+    private const CACHE_KEY_PREFIX = 'yg_ws_server_token_';
 
-    public function __construct(string $appId, string $appSecret, string $baseUrl = 'https://chat.yungangunite.com')
-    {
+    public function __construct(
+        string $appId, 
+        string $appSecret, 
+        string $baseUrl = 'https://chat.yungangunite.com',
+        ?CacheInterface $cache = null
+    ) {
         $this->appId = $appId;
         $this->appSecret = $appSecret;
         $this->baseUrl = rtrim($baseUrl, '/');
@@ -22,6 +28,7 @@ class YGWSClient
             'base_uri' => $this->baseUrl,
             'timeout' => 10.0,
         ]);
+        $this->cache = $cache ?? new FileCache();
     }
 
     /**
@@ -31,9 +38,16 @@ class YGWSClient
      */
     public function getServerToken(): string
     {
-        // 如果令牌未过期，直接返回
-        if ($this->serverToken && $this->serverTokenExpiresAt && time() < strtotime($this->serverTokenExpiresAt)) {
-            return $this->serverToken;
+        $cacheKey = self::CACHE_KEY_PREFIX . $this->appId;
+
+        // 尝试从缓存获取令牌
+        if ($this->cache) {
+            $cachedData = $this->cache->get($cacheKey);
+            if ($cachedData && isset($cachedData['token']) && isset($cachedData['expires_at'])) {
+                if (time() < strtotime($cachedData['expires_at'])) {
+                    return $cachedData['token'];
+                }
+            }
         }
 
         try {
@@ -51,10 +65,18 @@ class YGWSClient
                 throw new \Exception('Failed to get server token');
             }
 
-            $this->serverToken = $data['access_token'];
-            $this->serverTokenExpiresAt = date('Y-m-d H:i:s', time() + $data['expires_in']);
+            $token = $data['access_token'];
+            $expiresAt = date('Y-m-d H:i:s', time() + $data['expires_in']);
 
-            return $this->serverToken;
+            // 保存到缓存
+            if ($this->cache) {
+                $this->cache->set($cacheKey, [
+                    'token' => $token,
+                    'expires_at' => $expiresAt
+                ], $data['expires_in']);
+            }
+
+            return $token;
         } catch (\Exception $e) {
             throw new \Exception('Failed to get server token: ' . $e->getMessage());
         }

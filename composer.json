@@ -6,7 +6,11 @@
     "require": {
         "php": ">=7.4",
         "guzzlehttp/guzzle": "^7.0",
-        "ext-json": "*"
+        "ext-json": "*",
+        "predis/predis": "^2.0"
+    },
+    "suggest": {
+        "predis/predis": "^2.0 用于Redis缓存支持"
     },
     "autoload": {
         "psr-4": {

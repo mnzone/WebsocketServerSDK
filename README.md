@@ -7,7 +7,7 @@
 使用Composer安装：
 
 ```bash
-composer require yg/websocket-server-sdk
+composer require yungangunite/websocket-server-sdk
 ```
 
 ## 系统要求
