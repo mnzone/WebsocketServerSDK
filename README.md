@@ -22,7 +22,7 @@ composer require yg/websocket-server-sdk
 ### 1. 创建客户端实例
 
 ```php
-use YG\WebSocketClient\YGWSClient;
+use YG\WSServer\YGWSClient;
 
 $client = new YGWSClient(
     'your_app_id',

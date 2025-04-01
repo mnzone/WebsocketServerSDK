@@ -3,9 +3,6 @@
 namespace YG\WSServer;
 
 use GuzzleHttp\Client;
-use Ratchet\Client\WebSocket;
-use React\EventLoop\Factory;
-use React\Promise\PromiseInterface;
 
 class YGWSClient
 {

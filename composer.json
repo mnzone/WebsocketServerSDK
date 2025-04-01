@@ -1,17 +1,16 @@
 {
-    "name": "yungangunite/websocket-server-sdk",
+    "name": "yg/websocket-server-sdk",
     "description": "PHP SDK for WebSocket service integration",
     "type": "library",
     "license": "MIT",
     "require": {
         "php": ">=7.4",
         "guzzlehttp/guzzle": "^7.0",
-        "ratchet/pawl": "^0.4.1",
         "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
-            "YG\\WebSocketClient\\": "src/"
+            "YG\\WSServer\\": "src/"
         }
     },
     "authors": [
