@@ -172,7 +172,7 @@ class YGWSClient
                 $payload['data'] = $data;
             }
 
-            $response = $this->httpClient->post('/system/send', [
+            $response = $this->httpClient->post('/send-system-message', [
                 'headers' => [
                     'Authorization' => 'Bearer ' . $this->getServerToken(),
                     'Content-Type' => 'application/json'
