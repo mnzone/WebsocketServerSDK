@@ -169,7 +169,7 @@ class YGWSClient
             }
 
             if ($data !== null) {
-                $payload['data'] = $data;
+                $payload['metadata'] = $data;
             }
 
             $response = $this->httpClient->post('/system/send-system-message', [
