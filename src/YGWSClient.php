@@ -3,6 +3,7 @@
 namespace YG\WSServer;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use YG\WSServer\Cache\CacheInterface;
 use YG\WSServer\Cache\FileCache;
 
@@ -134,5 +135,114 @@ class YGWSClient
         } catch (\Exception $e) {
             throw new \Exception('Failed to get WebSocket token: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * 发送消息的通用方法
+     * @param string $targetType 目标类型 (user, client, room)
+     * @param string $targetId 目标ID
+     * @param string $content 消息内容
+     * @param string $title 消息标题
+     * @param array|null $data 附加数据
+     * @param string $messageType 消息类型
+     * @return array
+     * @throws \Exception
+     */
+    private function sendMessage(
+        string $targetType,
+        string $targetId,
+        string $content,
+        string $title = '',
+        ?array $data = null,
+        string $messageType = 'system'
+    ): array {
+        try {
+            $payload = [
+                'target_type' => $targetType,
+                'target_id' => $targetId,
+                'message_type' => $messageType,
+                'content' => $content
+            ];
+
+            if (!empty($title)) {
+                $payload['title'] = $title;
+            }
+
+            if ($data !== null) {
+                $payload['data'] = $data;
+            }
+
+            $response = $this->httpClient->post('/system/send', [
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->getServerToken(),
+                    'Content-Type' => 'application/json'
+                ],
+                'json' => $payload
+            ]);
+
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (\Exception $e) {
+            throw new \Exception("Failed to send message to {$targetType}: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * 发送消息给指定用户的所有客户端
+     * @param string $targetId 目标用户ID
+     * @param string $content 消息内容
+     * @param string $title 消息标题
+     * @param array|null $data 附加数据
+     * @param string $messageType 消息类型，默认为'system'
+     * @return array
+     * @throws \Exception
+     */
+    public function sendMessageToUser(
+        string $targetId,
+        string $content,
+        string $title = '',
+        ?array $data = null,
+        string $messageType = 'system'
+    ): array {
+        return $this->sendMessage('user', $targetId, $content, $title, $data, $messageType);
+    }
+
+    /**
+     * 发送消息给指定客户端
+     * @param string $clientId 目标客户端ID
+     * @param string $content 消息内容
+     * @param string $title 消息标题
+     * @param array|null $data 附加数据
+     * @param string $messageType 消息类型，默认为'notification'
+     * @return array
+     * @throws \Exception
+     */
+    public function sendMessageToClient(
+        string $clientId,
+        string $content,
+        string $title = '',
+        ?array $data = null,
+        string $messageType = 'notification'
+    ): array {
+        return $this->sendMessage('client', $clientId, $content, $title, $data, $messageType);
+    }
+
+    /**
+     * 发送消息给指定房间的所有用户
+     * @param string $roomId 目标房间ID
+     * @param string $content 消息内容
+     * @param string $title 消息标题
+     * @param array|null $data 附加数据
+     * @param string $messageType 消息类型，默认为'broadcast'
+     * @return array
+     * @throws \Exception
+     */
+    public function sendMessageToRoom(
+        string $roomId,
+        string $content,
+        string $title = '',
+        ?array $data = null,
+        string $messageType = 'broadcast'
+    ): array {
+        return $this->sendMessage('room', $roomId, $content, $title, $data, $messageType);
     }
 } 
