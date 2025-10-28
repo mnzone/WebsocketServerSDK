@@ -66,6 +66,69 @@ try {
     echo "WebSocket令牌：\n";
     print_r($wsToken);
 
+    // 发送消息给指定用户
+    $messageResult = $client->sendMessageToUser(
+        $userData['user_id'], // 目标用户ID
+        '这是一条系统消息', // 消息内容
+        '系统通知', // 消息标题
+        [ // 附加数据
+            'action' => 'notification',
+            'priority' => 'high'
+        ]
+    );
+    echo "消息发送结果：\n";
+    print_r($messageResult);
+
+    // 发送简单消息（只传必需参数）
+    $simpleMessage = $client->sendMessageToUser(
+        $userData['user_id'],
+        '这是一条简单消息'
+    );
+    echo "简单消息发送结果：\n";
+    print_r($simpleMessage);
+
+    // 发送消息给指定客户端
+    $clientMessage = $client->sendMessageToClient(
+        '837b39e1-54fc-4667-bc12-4e263a5cf7b4', // 目标客户端ID
+        '这是一条通知消息', // 消息内容
+        '重要通知', // 消息标题
+        [ // 附加数据
+            'action' => 'update_required',
+            'url' => 'https://example.com/update'
+        ]
+    );
+    echo "客户端消息发送结果：\n";
+    print_r($clientMessage);
+
+    // 发送简单客户端消息（只传必需参数）
+    $simpleClientMessage = $client->sendMessageToClient(
+        '837b39e1-54fc-4667-bc12-4e263a5cf7b4',
+        '这是一条简单客户端消息'
+    );
+    echo "简单客户端消息发送结果：\n";
+    print_r($simpleClientMessage);
+
+    // 发送消息给指定房间的所有用户
+    $roomMessage = $client->sendMessageToRoom(
+        'room_123', // 目标房间ID
+        '房间公告：系统将在10分钟后维护', // 消息内容
+        '系统维护通知', // 消息标题
+        [ // 附加数据
+            'maintenance_time' => '2025-10-27 21:00:00',
+            'duration' => '30分钟'
+        ]
+    );
+    echo "房间消息发送结果：\n";
+    print_r($roomMessage);
+
+    // 发送简单房间消息（只传必需参数）
+    $simpleRoomMessage = $client->sendMessageToRoom(
+        'room_123',
+        '这是一条简单房间消息'
+    );
+    echo "简单房间消息发送结果：\n";
+    print_r($simpleRoomMessage);
+
 } catch (Exception $e) {
     echo "错误：" . $e->getMessage() . "\n";
 } 

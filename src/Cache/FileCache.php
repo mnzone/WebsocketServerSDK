@@ -6,7 +6,7 @@ class FileCache implements CacheInterface
 {
     private string $cacheDir;
 
-    public function __construct(string $cacheDir = null)
+    public function __construct(?string $cacheDir = null)
     {
         $this->cacheDir = $cacheDir ?? sys_get_temp_dir() . '/yg_ws_cache';
         if (!is_dir($this->cacheDir)) {
